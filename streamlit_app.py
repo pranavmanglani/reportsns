@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 
 # --- Hardcoded credentials ---
 USERNAME = "user"
@@ -7,8 +8,6 @@ PASSWORD = "pass123"
 # --- Session state ---
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
-if "uploaded_files" not in st.session_state:
-    st.session_state.uploaded_files = {}
 
 # --- Login Page ---
 def login():
@@ -16,32 +15,38 @@ def login():
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
     if st.button("Login"):
-        if username == USERNAME and password == PASSWORD:
+        if username == "admin" and password == "pass":
             st.session_state.logged_in = True
             st.success("Logged in successfully!")
         else:
             st.error("Invalid credentials")
 
-# --- PDF Upload & Download Page ---
+# --- Upload & Download Dashboard ---
 def pdf_dashboard():
     st.title("PDF Dashboard")
 
-    uploaded = st.file_uploader("Upload PDF files", type=["pdf"], accept_multiple_files=True)
+    # Upload PDF
+    uploaded = st.file_uploader("Upload a PDF", type=["pdf"])
     if uploaded:
-        for file in uploaded:
-            st.session_state.uploaded_files[file.name] = file
+        with open(uploaded.name, "wb") as f:
+            f.write(uploaded.getbuffer())
+        st.success(f"{uploaded.name} uploaded successfully!")
 
-    if not st.session_state.uploaded_files:
-        st.info("No PDFs uploaded yet.")
+    # List and download all PDFs in the main directory
+    st.subheader("Available PDFs")
+    pdf_files = [f for f in os.listdir() if f.endswith(".pdf")]
+
+    if not pdf_files:
+        st.info("No PDFs available.")
     else:
-        st.subheader("Available PDFs")
-        for name, file in st.session_state.uploaded_files.items():
-            st.download_button(
-                label=f"Download {name}",
-                data=file.getvalue(),
-                file_name=name,
-                mime="application/pdf"
-            )
+        for pdf in pdf_files:
+            with open(pdf, "rb") as f:
+                st.download_button(
+                    label=f"Download {pdf}",
+                    data=f,
+                    file_name=pdf,
+                    mime="application/pdf"
+                )
 
 # --- Main App Logic ---
 if not st.session_state.logged_in:
