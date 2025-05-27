@@ -24,7 +24,7 @@ def login():
 
 # --- PDF Upload & Download Page ---
 def pdf_dashboard():
-    st.title("PDF Dashboard")
+    st.title("DB PDF Dashboard")
 
     uploaded = st.file_uploader("Upload PDF files", type=["pdf"], accept_multiple_files=True)
     if uploaded:
