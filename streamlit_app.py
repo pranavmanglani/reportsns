@@ -21,18 +21,18 @@ def login():
         else:
             st.error("Invalid credentials")
 
-# --- Upload & Download Dashboard ---
+# --- Upload & Manage PDFs ---
 def pdf_dashboard():
     st.title("PDF Dashboard")
 
-    # Upload PDF
+    # Upload Section
     uploaded = st.file_uploader("Upload a PDF", type=["pdf"])
     if uploaded:
         with open(uploaded.name, "wb") as f:
             f.write(uploaded.getbuffer())
         st.success(f"{uploaded.name} uploaded successfully!")
 
-    # List and download all PDFs in the main directory
+    # Display and manage PDFs
     st.subheader("Available PDFs")
     pdf_files = [f for f in os.listdir() if f.endswith(".pdf")]
 
@@ -40,16 +40,17 @@ def pdf_dashboard():
         st.info("No PDFs available.")
     else:
         for pdf in pdf_files:
-            with open(pdf, "rb") as f:
-                st.download_button(
-                    label=f"Download {pdf}",
-                    data=f,
-                    file_name=pdf,
-                    mime="application/pdf"
-                )
-
-# --- Main App Logic ---
-if not st.session_state.logged_in:
-    login()
-else:
-    pdf_dashboard()
+            col1, col2 = st.columns([4, 1])
+            with col1:
+                with open(pdf, "rb") as f:
+                    st.download_button(
+                        label=f"Download {pdf}",
+                        data=f,
+                        file_name=pdf,
+                        mime="application/pdf",
+                        key=f"download_{pdf}"
+                    )
+            with col2:
+                if st.button("Delete", key=f"delete_{pdf}"):
+                    os.remove(pdf)
+                    st.success(f"{
