@@ -2,8 +2,8 @@ import streamlit as st
 import os
 
 # --- Hardcoded credentials ---
-USERNAME = "user"
-PASSWORD = "pass123"
+USERNAME = "super"
+PASSWORD = "pranav@2809"
 
 # --- Session state ---
 if "logged_in" not in st.session_state:
